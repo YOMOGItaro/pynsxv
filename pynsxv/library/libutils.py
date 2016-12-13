@@ -25,6 +25,7 @@
 from pyVim.connect import SmartConnect
 from pyVmomi import vim
 import ssl
+from retry import retry
 
 __author__ = 'Dimitri Desmidt, Emanuele Mazza, Yves Fauser, Andreas La Quiante'
 
@@ -42,6 +43,24 @@ VIM_TYPES = {'datacenter': [vim.Datacenter],
              'respool': [vim.ResourcePool],
              'vapp': [vim.ResourcePool],
              'vnic': [vim.VirtualMachine]}
+
+
+def wait_for_job_completion(job_id, **kwargs):
+    if job_id:
+        wait_for_job_completion_iter(job_id=job_id, **kwargs)
+    else:
+        raise Exception('No job found.')
+
+
+@retry(tries=10, delay=5, backoff=2, max_delay=30)
+def wait_for_job_completion_iter(client_session, job_id, completion_status):
+    response = client_session.read('taskFrameworkJobs', uri_parameters={'jobId': job_id})
+    status = response['body']['jobInstances']['jobInstance']['status']
+    if status == completion_status:
+        return
+    else:
+        print("wait for complete {}.".format(str(job_id)))
+        raise Exception('Timeout waiting for Job to complete')
 
 
 def nametovalue(vccontent, client_session, name, type):
@@ -151,6 +170,10 @@ def get_mo_by_id(content, searchedid, vim_type):
     return None
 
 
+def get_mo_by_inventory_path(content, inventory_path):
+    return content.searchIndex.FindByInventoryPath(inventory_path)
+
+
 def get_all_objs(content, vimtype):
     obj = {}
     container = content.viewManager.CreateContainerView(content.rootFolder, vimtype, True)
@@ -219,6 +242,10 @@ def get_datastoremoid(content, edge_datastore):
 
 
 def get_edgeresourcepoolmoid(content, edge_cluster):
+    return get_resourcepoolmoid(content, edge_cluster)
+
+
+def get_resourcepoolmoid(content, edge_cluster):
     cluser_mo = get_mo_by_name(content, edge_cluster, VIM_TYPES['cluster'])
     if cluser_mo:
         return str(cluser_mo._moId)
