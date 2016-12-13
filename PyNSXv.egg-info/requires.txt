@@ -1,4 +1,0 @@
-nsxramlclient>=2.0.1
-pyvmomi
-tabulate
-setuptools>=11.3
