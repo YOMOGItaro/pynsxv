@@ -33,6 +33,7 @@ import library.nsx_lb as lb
 import library.nsx_dfw as dfw
 import library.nsx_usage as usage
 import library.nsx_cluster as cluster
+import library.nsx_host as host
 
 
 def main():
@@ -59,7 +60,8 @@ def main():
     dfw.contruct_parser(subparsers)
     usage.contruct_parser(subparsers)
     cluster.contruct_parser(subparsers)
-    
+    host.contruct_parser(subparsers)
+
     args = parser.parse_args()
     args.func(args)
 

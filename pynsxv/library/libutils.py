@@ -253,6 +253,14 @@ def get_resourcepoolmoid(content, edge_cluster):
         return None
 
 
+def get_hostmoid(content, host):
+    host_mo = get_mo_by_name(content, host, VIM_TYPES['host'])
+    if host_mo:
+        return str(host_mo._moId)
+    else:
+        return None
+
+
 def get_vdsportgroupid(content, switch_name):
     portgroup_mo = get_mo_by_name(content, switch_name, VIM_TYPES['dportgroup'])
     if portgroup_mo:
