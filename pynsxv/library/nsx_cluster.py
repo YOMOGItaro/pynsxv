@@ -4,7 +4,7 @@
 import ConfigParser
 from tabulate import tabulate
 from nsxramlclient.client import NsxClient
-from libutils import get_edgeresourcepoolmoid, connect_to_vc, get_mo_by_inventory_path, wait_for_job_completion
+from libutils import get_resourcepoolmoid, connect_to_vc, get_mo_by_inventory_path, wait_for_job_completion
 from pkg_resources import resource_filename
 
 __author__ = 'YOMOGItaro'
@@ -74,7 +74,7 @@ def _cluster_main(args):
         obj = get_mo_by_inventory_path(vccontent, args.cluster_inventory_path)
         moid = str(obj._moId)
     elif args.cluster_name:
-        moid = get_edgeresourcepoolmoid(vccontent, args.cluster_name)
+        moid = get_resourcepoolmoid(vccontent, args.cluster_name)
     else:
         moid = args.cluster_moid
 
